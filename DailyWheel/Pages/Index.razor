@@ -1,0 +1,37 @@
+﻿@page "/{day}"
+@inject Data.IPuzzleRepository PuzzleRepo
+
+<Puzzle Model="@Model" />
+
+<div class="save-section">
+    @if (editMode) { 
+        <button class="save-btn btn btn-primary" @onclick="SavePuzzleAsync">Save</button>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string Day { get; set; }
+
+    public PuzzleModel Model { get; set; } = new PuzzleModel();
+
+    bool editMode => Model.Day == null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var potd = await FetchPuzzleAsync();
+        if (potd != null)
+            Model = potd;
+    }
+
+    async Task<PuzzleModel?> FetchPuzzleAsync()
+    {
+        return await PuzzleRepo.GetAsync(Day);
+    }
+
+    async Task SavePuzzleAsync()
+    {
+        Model.Day = Day;
+        await PuzzleRepo.SaveAsync(Model);
+    }
+}

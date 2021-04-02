@@ -1,0 +1,35 @@
+﻿<div class="board">
+
+    @for (int i = 0; i < BoardState.GetLength(0); i++)
+    {
+        for (int j = 0; j < BoardState.GetLength(1); j++)
+        {
+            var letter = BoardState[i, j];
+            int row = i;
+            int col = j;
+            <input class="space-input @(letter.HasValue ? "" : "unused-space")" 
+                   @onkeyup="@(e => SpaceInputKeyup(e, row, col))" 
+                   disabled="@SpaceDisabled(row, col)" 
+                   value="@letter" />
+        }
+    }
+
+</div>
+
+@code {
+    [Parameter]
+    public char?[,] BoardState { get; set; }
+
+    void SpaceInputKeyup(KeyboardEventArgs e, int row, int col)
+    {
+        if (e.Key.Length == 1)
+            BoardState[row, col] = e.Key.Single();
+    }
+
+    bool SpaceDisabled(int row, int col)
+    {
+        return
+            (row == 0 && (col == 0 || col == 13)) ||
+            (row == 3 && (col == 0 || col == 13));
+    }
+}

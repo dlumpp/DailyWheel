@@ -1,0 +1,48 @@
+﻿<div class="puzzle">
+    <div class="title-section">
+        <img class="wheel-logo" src="/wheel-of-fortune-logo.png" />
+        <span>
+
+            @(Model.Date?.ToString("D") ?? "")
+        </span>
+    </div>
+
+    <div class="category-section">
+        <div>Category</div>
+        <div>
+            @if (editMode)
+            {
+                <input @bind-value="Model.Category" />
+            }
+             else
+            {
+                @Model.Category
+            }
+        </div>
+    </div>
+
+    <div>
+        <Board BoardState="@Model.Board"></Board>
+    </div>
+
+    <div class="used-letter-section">
+        <div>Used-Letter Board</div>
+        <div>
+            @if (editMode)
+            {
+                <input @bind-value="Model.UsedLetters" />
+            }
+            else
+            {
+                @Model.UsedLetters
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public PuzzleModel Model { get; set; }
+
+    bool editMode => Model.Day == null;
+}

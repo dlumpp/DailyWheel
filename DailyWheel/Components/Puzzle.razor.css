@@ -1,0 +1,17 @@
+﻿.puzzle {
+    display: grid;
+    grid-template-columns: auto;
+    justify-content: center;
+    row-gap: .2em;
+    font-size: 3vw;
+}
+
+.title-section,
+.category-section,
+.used-letter-section {
+    text-align: center;
+}
+
+.wheel-logo {
+    height: 2em;
+}

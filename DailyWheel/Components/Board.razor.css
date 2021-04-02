@@ -1,0 +1,25 @@
+﻿.board {
+    display: grid;
+    grid-template-columns: repeat(14, auto);
+    column-gap: .2em;
+    row-gap: .2em;
+    justify-content: center;
+    border: .5em solid #0070e3;
+    padding: .2em;
+}
+
+.space-input {
+    border: 2px black solid;
+    width: 1.5em;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.space-input:disabled {
+    border: none;
+}
+
+.unused-space:enabled {
+    background-color: #157d0c;
+}
