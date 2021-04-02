@@ -29,7 +29,6 @@ namespace DailyWheel
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
 
             string cosmosConnectionString = Configuration["CosmosConnectionString"];
             services.AddSingleton(_ => new CosmosClient(cosmosConnectionString,
