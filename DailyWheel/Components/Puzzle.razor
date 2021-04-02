@@ -1,8 +1,7 @@
 ﻿<div class="puzzle">
     <div class="title-section">
         <img class="wheel-logo" src="/wheel-of-fortune-logo.png" />
-        <span>
-
+        <span class="@textClass">
             @(Model.ParseDay()?.ToString("D") ?? "")
         </span>
     </div>
@@ -14,9 +13,9 @@
             {
                 <input @bind-value="Model.Category" />
             }
-             else
+            else
             {
-                @Model.Category
+                <span class="@textClass">@Model.Category</span>
             }
         </div>
     </div>
@@ -34,7 +33,7 @@
             }
             else
             {
-                @Model.UsedLetters
+                <span class="@textClass">@Model.UsedLetters</span>
             }
         </div>
     </div>
@@ -45,4 +44,7 @@
     public PuzzleModel Model { get; set; } = PuzzleModel.PrerenderPlaceholder;
 
     bool editMode => Model.IsUnsaved() && !Model.IsPrerenderInstance();
+    bool isLoading => Model.IsPrerenderInstance();
+
+    string textClass => isLoading ? "skeleton-text" : "";
 }

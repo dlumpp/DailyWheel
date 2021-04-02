@@ -46,3 +46,27 @@ a, .btn-link {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+.skeleton-text {
+    color: transparent;
+    user-select: none;
+    background: #eee;
+    background: linear-gradient(270deg, #f1f1f1, #e1e1e1, #f1f1f1);
+    background-size: 200% 100%;
+    border-radius: 4px;
+    animation: gradientMoves 800ms linear infinite;
+}
+
+@keyframes gradientMoves {
+    0% {
+        background-position: 0% 50%
+    }
+
+    50% {
+        background-position: 100% 50%
+    }
+
+    100% {
+        background-position: 200% 50%
+    }
+}
