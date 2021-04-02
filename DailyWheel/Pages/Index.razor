@@ -11,11 +11,11 @@
 
 @code {
     [Parameter]
-    public string Day { get; set; }
+    public string? Day { get; set; }
 
     public PuzzleModel Model { get; set; } = new PuzzleModel();
 
-    bool editMode => Model.Day == null;
+    bool editMode => Model.Id == null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -26,6 +26,9 @@
 
     async Task<PuzzleModel?> FetchPuzzleAsync()
     {
+        if (Day == null)
+            return null;
+
         return await PuzzleRepo.GetAsync(Day);
     }
 

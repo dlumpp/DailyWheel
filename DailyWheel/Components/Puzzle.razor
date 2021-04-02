@@ -42,7 +42,7 @@
 
 @code {
     [Parameter]
-    public PuzzleModel Model { get; set; }
+    public PuzzleModel Model { get; set; } = PuzzleModel.PrerenderPlaceholder;
 
     bool editMode => Model.Day == null;
 }

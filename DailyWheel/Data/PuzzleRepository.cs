@@ -1,11 +1,10 @@
 ﻿using DailyWheel.Model;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Cosmos.Linq;
 
 namespace DailyWheel.Data
 {
@@ -41,6 +40,7 @@ namespace DailyWheel.Data
 
         public async Task SaveAsync(PuzzleModel puzzleModel)
         {
+            puzzleModel.Id = Guid.NewGuid();
             await container.CreateItemAsync(puzzleModel, new PartitionKey(puzzleModel.Day));
         }
     }

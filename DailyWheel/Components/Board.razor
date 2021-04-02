@@ -18,7 +18,7 @@
 
 @code {
     [Parameter]
-    public char?[,] BoardState { get; set; }
+    public char?[,] BoardState { get; set; } = new char?[4, 14];
 
     void SpaceInputKeyup(KeyboardEventArgs e, int row, int col)
     {
