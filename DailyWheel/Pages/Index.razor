@@ -13,9 +13,9 @@
     [Parameter]
     public string? Day { get; set; }
 
-    public PuzzleModel Model { get; set; } = new PuzzleModel();
+    public PuzzleModel Model { get; set; } = PuzzleModel.PrerenderPlaceholder;
 
-    bool editMode => Model.Id == null;
+    bool editMode => Model.IsUnsaved() && !Model.IsPrerenderInstance();
 
     protected override async Task OnInitializedAsync()
     {

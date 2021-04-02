@@ -3,7 +3,7 @@
         <img class="wheel-logo" src="/wheel-of-fortune-logo.png" />
         <span>
 
-            @(Model.Date?.ToString("D") ?? "")
+            @(Model.ParseDay()?.ToString("D") ?? "")
         </span>
     </div>
 
@@ -44,5 +44,5 @@
     [Parameter]
     public PuzzleModel Model { get; set; } = PuzzleModel.PrerenderPlaceholder;
 
-    bool editMode => Model.Day == null;
+    bool editMode => Model.IsUnsaved() && !Model.IsPrerenderInstance();
 }
