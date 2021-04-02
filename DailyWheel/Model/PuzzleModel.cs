@@ -8,7 +8,7 @@ namespace DailyWheel.Model
         public string? Day { get; set; }
         public string? Category { get; set; }
         public char?[,] Board { get; set; } = new char?[4, 14];
-        public string? UsedLetters { get; set; }
+        public string? UsedLetters { get; set; } = AlwaysUsedLetters;
 
         public DateTime? ParseDay() => DateTime.TryParse(Day, out var result) ? result : null;
 
@@ -20,7 +20,9 @@ namespace DailyWheel.Model
         {
             Day = DateTime.Now.ToString("yyyy-MM-dd"),
             Category = "What are you doing?",
-            UsedLetters = "RSTLNE ABCD"
+            UsedLetters = AlwaysUsedLetters + " ABCD"
         };
+
+        const string AlwaysUsedLetters = "RSTLNE";
     }
 }
