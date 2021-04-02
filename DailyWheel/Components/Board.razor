@@ -1,35 +1,52 @@
 ﻿<div class="board">
 
-    @for (int i = 0; i < BoardState.GetLength(0); i++)
+    @foreach (var pos in EnumerateSpaces(0, 0))
     {
-        for (int j = 0; j < BoardState.GetLength(1); j++)
-        {
-            var letter = BoardState[i, j];
-            int row = i;
-            int col = j;
-            <input class="space-input @(letter.HasValue ? "" : "unused-space")" 
-                   @onkeyup="@(e => SpaceInputKeyup(e, row, col))" 
-                   disabled="@SpaceDisabled(row, col)" 
-                   value="@letter" />
-        }
+        var space = pos.Space;
+        <input @ref="spaceRefs[pos.Row, pos.Col]"
+               class="space-input @(space.InPlay ? "" : "unused-space")"
+               @onkeyup="@(e => SpaceInputKeyup(e, pos.Row, pos.Col))"
+               disabled="@space.NeverUsed"
+               value="@space.Letter"
+               maxlength="1" />
     }
-
 </div>
 
 @code {
     [Parameter]
-    public char?[,] BoardState { get; set; } = new char?[4, 14];
+    public BoardSpace[,] BoardState { get; set; } = BoardSpace.CreateEmptyBoard();
 
-    void SpaceInputKeyup(KeyboardEventArgs e, int row, int col)
+    ElementReference[,] spaceRefs { get; set; } = new ElementReference[BoardDimensions.Rows, BoardDimensions.Columns];
+
+    async Task SpaceInputKeyup(KeyboardEventArgs e, int row, int col)
     {
         if (e.Key.Length == 1)
-            BoardState[row, col] = e.Key.Single();
+        {
+            BoardState[row, col].Letter = e.Key.Single();
+            var nextSpace = FindNextSpace(row, col);
+            if(nextSpace.HasValue)
+                await nextSpace.Value.FocusAsync();
+        }
     }
 
-    bool SpaceDisabled(int row, int col)
+    ElementReference? FindNextSpace(int startRow, int startCol)
     {
-        return
-            (row == 0 && (col == 0 || col == 13)) ||
-            (row == 3 && (col == 0 || col == 13));
+        var space = EnumerateSpaces(startRow, startCol).Skip(1).FirstOrDefault(bp => !bp.Space.NeverUsed);
+        if (space == null)
+            return null;
+        return spaceRefs[space.Row, space.Col];
     }
+
+    IEnumerable<BoardPosition> EnumerateSpaces(int startRow, int startCol)
+    {
+        for (int row = startRow; row < BoardState.GetLength(0); row++)
+        {
+            for (int col = row == startRow ? startCol : 0; col < BoardState.GetLength(1); col++)
+            {
+                yield return new BoardPosition(BoardState[row, col], row, col);
+            }
+        }
+    }
+
+    record BoardPosition(BoardSpace Space, int Row, int Col);
 }
