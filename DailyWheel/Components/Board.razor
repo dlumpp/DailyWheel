@@ -1,18 +1,20 @@
 ﻿<div class="board">
 
-    @foreach (var pos in EnumerateSpaces(0, 0))
+    @foreach (var pos in EnumerateSpaces())
     {
         var space = pos.Space;
         <div>
-            @if(EditMode && !space.NeverUsed){
+            @if (EditMode && !space.NeverUsed)
+            {
                 <span>
-                    <input type="checkbox" @onchange="@(e => GivenCheckChange(e, pos.Row, pos.Col))"/>
+                    <input type="checkbox" @onchange="@(e => GivenCheckChange(e, pos.Row, pos.Col))" />
                 </span>
             }
 
             <input @ref="spaceRefs[pos.Row, pos.Col]"
-                   class="@(SpaceInputCssClasses(space))"
+                   class="@(SpaceInputCssClasses(pos))"
                    @onkeyup="@(e => SpaceInputKeyup(e, pos.Row, pos.Col))"
+                   onfocus="this.select();"
                    disabled="@space.NeverUsed"
                    readonly="@(!IsEditable(space))"
                    value="@(space.IsGiven || EditMode ? space.Letter : "")"
@@ -31,14 +33,24 @@
     ElementReference[,] spaceRefs { get; set; } = new ElementReference[BoardDimensions.Rows, BoardDimensions.Columns];
 
     char?[,] guesses { get; set; } = new char?[BoardDimensions.Rows, BoardDimensions.Columns];
+    bool guessCheckingEnabled;
 
-    string SpaceInputCssClasses(BoardSpace boardSpace)
+    string SpaceInputCssClasses(BoardPosition position)
     {
+        var boardSpace = position.Space;
         var classes = new List<string>() { "space-input" };
+        bool solvableSpace = !boardSpace.IsGiven && boardSpace.InPlay;
+        bool correctGuess = boardSpace.Letter == guesses[position.Row, position.Col];
+
         if (!boardSpace.InPlay)
             classes.Add("unused-space");
-        if (EditMode && !boardSpace.IsGiven && boardSpace.InPlay)
+        if (EditMode && solvableSpace)
             classes.Add("hidden-space");
+        if (solvableSpace && guessCheckingEnabled && correctGuess)
+            classes.Add("text-success");
+        if (solvableSpace && guessCheckingEnabled && !correctGuess)
+            classes.Add("text-danger");
+
         return String.Join(" ", classes);
     }
 
@@ -62,7 +74,7 @@
             if (nextSpace.HasValue)
                 await nextSpace.Value.FocusAsync();
         }
-        else if(e.Code == "Backspace" && EditMode)
+        else if (e.Code == "Backspace" && EditMode)
         {
             BoardState[row, col].Letter = null;
         }
@@ -82,7 +94,7 @@
         return !boardSpace.NeverUsed && (EditMode || (!EditMode && boardSpace.InPlay && !boardSpace.IsGiven));
     }
 
-    IEnumerable<BoardPosition> EnumerateSpaces(int startRow, int startCol)
+    IEnumerable<BoardPosition> EnumerateSpaces(int startRow = 0, int startCol = 0)
     {
         for (int row = startRow; row < BoardState.GetLength(0); row++)
         {
@@ -94,4 +106,18 @@
     }
 
     record BoardPosition(BoardSpace Space, int Row, int Col);
+
+    public void CheckGuesses()
+    {
+        guessCheckingEnabled = true;
+    }
+
+    public void ShowSolution()
+    {
+        foreach (var pos in EnumerateSpaces())
+        {
+            if (!pos.Space.IsGiven && pos.Space.InPlay)
+                pos.Space.IsGiven = true;
+        }
+    }
 }

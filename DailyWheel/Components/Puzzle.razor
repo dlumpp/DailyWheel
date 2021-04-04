@@ -21,7 +21,7 @@
     </div>
 
     <div>
-        <Board BoardState="@Model.Board" EditMode="EditMode"></Board>
+        <Board @ref="board" BoardState="@Model.Board" EditMode="EditMode"></Board>
     </div>
 
     <div class="used-letter-section">
@@ -37,6 +37,11 @@
             }
         </div>
     </div>
+
+    <div class="control-section">
+        <button class="btn btn-primary float-left" @onclick="SolveClicked">I'd like to solve</button>
+        <button class="btn btn-secondary float-right" @onclick="GiveUpClicked">I give up</button>
+    </div>
 </div>
 
 @code {
@@ -49,4 +54,15 @@
     bool isLoading => Model.IsPrerenderInstance();
 
     string textClass => isLoading ? "skeleton-text" : "";
+
+    Board? board;
+
+    void SolveClicked(MouseEventArgs e) {
+        board?.CheckGuesses();
+    }
+
+    void GiveUpClicked(MouseEventArgs e)
+    {
+        board?.ShowSolution();
+    }
 }
