@@ -1,7 +1,7 @@
 ﻿@page "/{day}"
 @inject Data.IPuzzleRepository PuzzleRepo
 
-<Puzzle Model="@Model" />
+<Puzzle Model="@Model" EditMode="editMode" />
 
 <div class="save-section">
     @if (editMode) { 

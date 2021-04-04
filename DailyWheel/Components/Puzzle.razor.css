@@ -12,6 +12,10 @@
     text-align: center;
 }
 
+.control-section button {
+   font-size: inherit;
+}
+
 .wheel-logo {
     height: 2em;
 }

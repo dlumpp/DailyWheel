@@ -7,7 +7,7 @@ namespace DailyWheel.Model
         public Guid? Id { get; set; }
         public string? Day { get; set; }
         public string? Category { get; set; }
-        public char?[,] Board { get; set; } = new char?[4, 14];
+        public BoardSpace[,] Board { get; set; } = BoardSpace.CreateEmptyBoard();
         public string? UsedLetters { get; set; } = AlwaysUsedLetters;
 
         public DateTime? ParseDay() => DateTime.TryParse(Day, out var result) ? result : null;
