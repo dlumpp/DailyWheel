@@ -13,7 +13,7 @@
 
             <input @ref="spaceRefs[pos.Row, pos.Col]"
                    class="@(SpaceInputCssClasses(pos))"
-                   @onkeyup="@(e => SpaceInputKeyup(e, pos.Row, pos.Col))"
+                   @oninput="@(e => SpaceOnInput(e, pos.Row, pos.Col))"
                    onfocus="this.select();"
                    disabled="@space.NeverUsed"
                    readonly="@(!IsEditable(space))"
@@ -59,25 +59,25 @@
         BoardState[row, col].IsGiven = (bool?)e.Value ?? false;
     }
 
-    async Task SpaceInputKeyup(KeyboardEventArgs e, int row, int col)
+    async Task SpaceOnInput(ChangeEventArgs e, int row, int col)
     {
-        if (e.Key.Length == 1)
-        {
-            var letterKeyed = e.Key.Single();
+        string? inputValue = (string?)e.Value;
+        char? inputLetter = string.IsNullOrWhiteSpace(inputValue) 
+            ? null 
+            : inputValue?.FirstOrDefault();
+        await InputReceived(inputLetter, row, col);
+    }
 
-            if (EditMode)
-                BoardState[row, col].Letter = letterKeyed;
-            else
-                guesses[row, col] = letterKeyed;
+    async Task InputReceived(char? letter, int row, int col)
+    {
+        if (EditMode)
+            BoardState[row, col].Letter = letter;
+        else
+            guesses[row, col] = letter;
 
-            var nextSpace = FindNextEditableSpace(row, col);
-            if (nextSpace.HasValue)
-                await nextSpace.Value.FocusAsync();
-        }
-        else if (e.Code == "Backspace" && EditMode)
-        {
-            BoardState[row, col].Letter = null;
-        }
+        var nextSpace = FindNextEditableSpace(row, col);
+        if (nextSpace.HasValue)
+            await nextSpace.Value.FocusAsync();
     }
 
     ElementReference? FindNextEditableSpace(int startRow, int startCol)
