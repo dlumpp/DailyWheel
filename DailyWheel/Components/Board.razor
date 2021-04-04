@@ -3,13 +3,21 @@
     @foreach (var pos in EnumerateSpaces(0, 0))
     {
         var space = pos.Space;
-        <input @ref="spaceRefs[pos.Row, pos.Col]"
-               class="space-input @(space.InPlay ? "" : "unused-space")"
-               @onkeyup="@(e => SpaceInputKeyup(e, pos.Row, pos.Col))"
-               disabled="@space.NeverUsed"
-               readonly="@(!IsEditable(space))"
-               value="@space.Letter"
-               maxlength="1" />
+        <div>
+            @if(EditMode && !space.NeverUsed){
+                <span>
+                    <input type="checkbox" @onchange="@(e => GivenCheckChange(e, pos.Row, pos.Col))"/>
+                </span>
+            }
+
+            <input @ref="spaceRefs[pos.Row, pos.Col]"
+                   class="@(SpaceInputCssClasses(space))"
+                   @onkeyup="@(e => SpaceInputKeyup(e, pos.Row, pos.Col))"
+                   disabled="@space.NeverUsed"
+                   readonly="@(!IsEditable(space))"
+                   value="@(space.IsGiven || EditMode ? space.Letter : "")"
+                   maxlength="1" />
+        </div>
     }
 </div>
 
@@ -22,14 +30,41 @@
 
     ElementReference[,] spaceRefs { get; set; } = new ElementReference[BoardDimensions.Rows, BoardDimensions.Columns];
 
+    char?[,] guesses { get; set; } = new char?[BoardDimensions.Rows, BoardDimensions.Columns];
+
+    string SpaceInputCssClasses(BoardSpace boardSpace)
+    {
+        var classes = new List<string>() { "space-input" };
+        if (!boardSpace.InPlay)
+            classes.Add("unused-space");
+        if (EditMode && !boardSpace.IsGiven && boardSpace.InPlay)
+            classes.Add("hidden-space");
+        return String.Join(" ", classes);
+    }
+
+    void GivenCheckChange(ChangeEventArgs e, int row, int col)
+    {
+        BoardState[row, col].IsGiven = (bool?)e.Value ?? false;
+    }
+
     async Task SpaceInputKeyup(KeyboardEventArgs e, int row, int col)
     {
         if (e.Key.Length == 1)
         {
-            BoardState[row, col].Letter = e.Key.Single();
+            var letterKeyed = e.Key.Single();
+
+            if (EditMode)
+                BoardState[row, col].Letter = letterKeyed;
+            else
+                guesses[row, col] = letterKeyed;
+
             var nextSpace = FindNextEditableSpace(row, col);
-            if(nextSpace.HasValue)
+            if (nextSpace.HasValue)
                 await nextSpace.Value.FocusAsync();
+        }
+        else if(e.Code == "Backspace" && EditMode)
+        {
+            BoardState[row, col].Letter = null;
         }
     }
 

@@ -23,3 +23,7 @@
 .unused-space:enabled {
     background-color: #157d0c;
 }
+
+.hidden-space:enabled {
+    opacity: .25;
+}
