@@ -9,7 +9,7 @@
     <div class="category-section">
         <div>Category</div>
         <div>
-            @if (editMode)
+            @if (EditMode)
             {
                 <input @bind-value="Model.Category" />
             }
@@ -21,13 +21,13 @@
     </div>
 
     <div>
-        <Board BoardState="@Model.Board"></Board>
+        <Board BoardState="@Model.Board" EditMode="EditMode"></Board>
     </div>
 
     <div class="used-letter-section">
         <div>Used-Letter Board</div>
         <div>
-            @if (editMode)
+            @if (EditMode)
             {
                 <input @bind-value="Model.UsedLetters" />
             }
@@ -43,7 +43,9 @@
     [Parameter]
     public PuzzleModel Model { get; set; } = PuzzleModel.PrerenderPlaceholder;
 
-    bool editMode => Model.IsUnsaved() && !Model.IsPrerenderInstance();
+    [Parameter]
+    public bool EditMode { get; set; }
+
     bool isLoading => Model.IsPrerenderInstance();
 
     string textClass => isLoading ? "skeleton-text" : "";
